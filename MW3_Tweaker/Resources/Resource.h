@@ -8,7 +8,7 @@
 #define IDC_FRAMESPERSECOND             1002
 #define IDC_FOVTEXT                     1003
 #define IDC_FPSTEXT                     1004
-#define IDT_TIMER						1005
+#define IDT_TIMER                       1005
 
 // Next default values for new objects
 // 
