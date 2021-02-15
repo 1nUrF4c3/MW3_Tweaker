@@ -29,6 +29,7 @@ private:
 	DLG_HANDLER(OnInit);
 	DLG_HANDLER(OnClose);
 	DLG_HANDLER(OnSlider);
+	DLG_HANDLER(OnTimer);
 
 	ctrl::cSlider _fieldOfView;
 	ctrl::cSlider _framesPerSecond;

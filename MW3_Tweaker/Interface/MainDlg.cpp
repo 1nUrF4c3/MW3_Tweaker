@@ -10,6 +10,7 @@ cMainDlg::cMainDlg(HINSTANCE instance) : cDialog(IDD_MAIN), _instance(instance)
 	_messages[WM_COMMAND] = static_cast<cDialog::fnDlgProc>(&cMainDlg::OnCommand);
 	_messages[WM_CLOSE] = static_cast<cDialog::fnDlgProc>(&cMainDlg::OnClose);
 	_messages[WM_HSCROLL] = static_cast<cDialog::fnDlgProc>(&cMainDlg::OnSlider);
+	_messages[WM_TIMER] = static_cast<cDialog::fnDlgProc>(&cMainDlg::OnTimer);
 }
 
 //=====================================================================================
@@ -37,6 +38,8 @@ INT_PTR cMainDlg::OnInit(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 	_framesPerSecond.SetRange(0, 240);
 	_framesPerSecond.Position(85);
 
+	SetTimer(_hwnd, IDT_TIMER, 1, (TIMERPROC)NULL);
+
 	RefreshGUI();
 
 	return TRUE;
@@ -53,13 +56,21 @@ INT_PTR cMainDlg::OnClose(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 
 INT_PTR cMainDlg::OnSlider(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
-	if ((HWND)lParam == _fieldOfView.GetHwnd())
+	if ((HWND)lParam == _fieldOfView.GetHwnd() || (HWND)lParam == _framesPerSecond.GetHwnd())
+		RefreshGUI();
+
+	return TRUE;
+}
+
+//=====================================================================================
+
+INT_PTR cMainDlg::OnTimer(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
+{
+	if (wParam == IDT_TIMER)
+	{
 		cMemory::MemWrite("iw5mp.exe", CG_FOV, (float)_fieldOfView.Position());
-
-	else if ((HWND)lParam == _framesPerSecond.GetHwnd())
 		cMemory::MemWrite("iw5mp.exe", COM_MAXFPS, (int)_framesPerSecond.Position());
-
-	RefreshGUI();
+	}
 
 	return TRUE;
 }
