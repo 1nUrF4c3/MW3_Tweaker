@@ -68,8 +68,23 @@ INT_PTR cMainDlg::OnTimer(HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	if (wParam == IDT_TIMER)
 	{
-		cMemory::MemWrite("iw5mp.exe", CG_FOV, (float)_fieldOfView.Position());
-		cMemory::MemWrite("iw5mp.exe", COM_MAXFPS, (int)_framesPerSecond.Position());
+		float flFov;
+
+		cMemory::MemRead("iw5mp.exe", CG_FOV, &flFov);
+
+		if (flFov != (float)_fieldOfView.Position())
+		{
+			cMemory::MemWrite("iw5mp.exe", CG_FOV, (float)_fieldOfView.Position());
+		}
+
+		int iMaxFps;
+
+		cMemory::MemRead("iw5mp.exe", COM_MAXFPS, &iMaxFps);
+
+		if (iMaxFps != (int)_framesPerSecond.Position())
+		{
+			cMemory::MemWrite("iw5mp.exe", COM_MAXFPS, (int)_framesPerSecond.Position());
+		}
 	}
 
 	return TRUE;

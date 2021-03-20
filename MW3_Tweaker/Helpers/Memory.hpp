@@ -14,13 +14,31 @@ public:
 	template<typename TYPE>
 	static BOOL MemRead(const char* process, DWORD_PTR address, TYPE* buffer)
 	{
-		return ReadProcessMemory(OpenProcess(PROCESS_ALL_ACCESS, FALSE, EnumProcess(process)), reinterpret_cast<LPCVOID>(address), buffer, sizeof(TYPE), NULL);
+		BOOL bReturn = FALSE;
+
+		if (auto hProcess{ OpenProcess(PROCESS_ALL_ACCESS, FALSE, EnumProcess(process)) }; hProcess)
+		{
+			bReturn = ReadProcessMemory(hProcess, reinterpret_cast<LPCVOID>(address), reinterpret_cast<LPVOID>(buffer), sizeof(TYPE), NULL);
+
+			CloseHandle(hProcess);
+		}
+
+		return bReturn;
 	}
 
 	template<typename TYPE>
 	static BOOL MemWrite(const char* process, DWORD_PTR address, TYPE buffer)
 	{
-		return WriteProcessMemory(OpenProcess(PROCESS_ALL_ACCESS, FALSE, EnumProcess(process)), reinterpret_cast<LPVOID>(address), &buffer, sizeof(TYPE), NULL);
+		BOOL bReturn = FALSE;
+
+		if (auto hProcess{ OpenProcess(PROCESS_ALL_ACCESS, FALSE, EnumProcess(process)) }; hProcess)
+		{
+			bReturn = WriteProcessMemory(hProcess, reinterpret_cast<LPVOID>(address), reinterpret_cast<LPCVOID>(&buffer), sizeof(TYPE), NULL);
+
+			CloseHandle(hProcess);
+		}
+
+		return bReturn;
 	}
 
 private:
@@ -32,7 +50,7 @@ private:
 		PROCESSENTRY32 ProcessEntry = { NULL };
 		ProcessEntry.dwSize = sizeof(PROCESSENTRY32);
 
-		for (BOOL bSuccess = Process32First(hSnapshot, &ProcessEntry); bSuccess; bSuccess = Process32Next(hSnapshot, &ProcessEntry))
+		for (auto bSuccess{ Process32First(hSnapshot, &ProcessEntry) }; bSuccess; bSuccess = Process32Next(hSnapshot, &ProcessEntry))
 		{
 			if (!strcmp(ProcessEntry.szExeFile, name))
 				return ProcessEntry.th32ProcessID;
